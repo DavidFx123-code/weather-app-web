@@ -1,0 +1,1139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Weather Now</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #02012b;
+        --card: #262540;
+        --card-hover: #302f4f;
+        --border: #3c3b5e;
+        --text: #fff;
+        --muted: #d4d3d9;
+        --accent: #4658d9;
+        --accent-hover: #3a4abf;
+        --orange: #f4a100;
+        --radius: 16px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "DM Sans", system-ui, sans-serif;
+        font-size: 18px;
+        min-height: 100vh;
+        padding: 48px 112px 64px;
+      }
+      button,
+      input {
+        font: inherit;
+        color: inherit;
+      }
+      button {
+        cursor: pointer;
+        border: 0;
+        background: none;
+      }
+      :focus-visible {
+        outline: 2px solid #fff;
+        outline-offset: 2px;
+      }
+      .container {
+        max-width: 1216px;
+        margin: 0 auto;
+      }
+
+      /* header */
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-family: "Bricolage Grotesque", sans-serif;
+        font-weight: 700;
+        font-size: 22px;
+      }
+      .menu-wrap {
+        position: relative;
+      }
+      .btn-units {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--card);
+        padding: 12px 16px;
+        border-radius: 10px;
+        font-size: 15px;
+        font-weight: 500;
+        transition: background 0.15s;
+      }
+      .btn-units:hover {
+        background: var(--card-hover);
+      }
+      .btn-units svg:last-child {
+        transition: transform 0.15s;
+      }
+      .btn-units[aria-expanded="true"] svg:last-child {
+        transform: rotate(180deg);
+      }
+      .dropdown {
+        position: absolute;
+        right: 0;
+        top: calc(100% + 8px);
+        z-index: 20;
+        min-width: 214px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 6px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        display: none;
+      }
+      .dropdown.open {
+        display: block;
+      }
+      .dd-switch {
+        width: 100%;
+        text-align: left;
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 500;
+      }
+      .dd-switch:hover,
+      .dd-switch:focus-visible {
+        background: var(--border);
+      }
+      .dd-group {
+        padding: 6px 0;
+        border-top: 1px solid var(--border);
+        margin-top: 4px;
+      }
+      .dd-group:first-of-type {
+        border-top: 0;
+      }
+      .dd-label {
+        font-size: 13px;
+        color: #a9a8c0;
+        padding: 6px 12px;
+      }
+      .dd-opt {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        text-align: left;
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 500;
+      }
+      .dd-opt:hover,
+      .dd-opt:focus-visible {
+        background: var(--border);
+      }
+      .dd-opt.active {
+        background: var(--border);
+      }
+      .dd-opt .check {
+        display: none;
+      }
+      .dd-opt.active .check {
+        display: inline;
+      }
+
+      /* hero */
+      h1 {
+        font-family: "Bricolage Grotesque", sans-serif;
+        font-weight: 700;
+        font-size: 56px;
+        text-align: center;
+        margin: 64px 0 48px;
+        line-height: 1.15;
+      }
+
+      /* search */
+      .search {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+        margin-bottom: 48px;
+        position: relative;
+      }
+      .search-box {
+        position: relative;
+        width: 526px;
+        max-width: 100%;
+      }
+      .search-box input {
+        width: 100%;
+        height: 56px;
+        background: var(--card);
+        border: 2px solid transparent;
+        border-radius: 12px;
+        padding: 0 20px 0 56px;
+        font-size: 18px;
+        transition:
+          background 0.15s,
+          border-color 0.15s;
+      }
+      .search-box input::placeholder {
+        color: var(--muted);
+      }
+      .search-box input:hover {
+        background: var(--card-hover);
+      }
+      .search-box input:focus {
+        outline: 2px solid #fff;
+        outline-offset: 2px;
+      }
+      .search-box svg {
+        position: absolute;
+        left: 20px;
+        top: 17px;
+        pointer-events: none;
+      }
+      .suggestions {
+        position: absolute;
+        top: 64px;
+        left: 0;
+        right: 0;
+        z-index: 15;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 6px;
+        display: none;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      }
+      .suggestions.open {
+        display: block;
+      }
+      .suggestions button {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-size: 16px;
+      }
+      .suggestions button:hover,
+      .suggestions button:focus-visible {
+        background: var(--border);
+      }
+      .suggestions .note {
+        padding: 10px 12px;
+        font-size: 16px;
+        color: var(--muted);
+      }
+      .btn-search {
+        height: 56px;
+        padding: 0 24px;
+        border-radius: 12px;
+        background: var(--accent);
+        font-weight: 500;
+        font-size: 18px;
+        transition: background 0.15s;
+      }
+      .btn-search:hover {
+        background: var(--accent-hover);
+      }
+
+      /* layout */
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 384px;
+        gap: 32px;
+        align-items: start;
+      }
+      .main {
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+      }
+
+      /* current */
+      .current {
+        position: relative;
+        overflow: hidden;
+        border-radius: 20px;
+        min-height: 286px;
+        padding: 0 24px 0 24px;
+        background: linear-gradient(
+          135deg,
+          #4659d8 0%,
+          #3a35b8 55%,
+          #2f2aa0 100%
+        );
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+      .current::before,
+      .current::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.06);
+      }
+      .current::before {
+        width: 300px;
+        height: 220px;
+        left: -80px;
+        bottom: -130px;
+      }
+      .current::after {
+        width: 340px;
+        height: 200px;
+        right: 80px;
+        bottom: -120px;
+      }
+      .current > * {
+        position: relative;
+        z-index: 1;
+      }
+      .loc {
+        font-family: "DM Sans", sans-serif;
+        font-size: 28px;
+        font-weight: 600;
+      }
+      .date {
+        font-size: 18px;
+        margin-top: 12px;
+        opacity: 0.85;
+      }
+      .temp-row {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+      .cur-icon {
+        font-size: 72px;
+        line-height: 1;
+      }
+      .temp {
+        font-family: "Bricolage Grotesque", sans-serif;
+        font-style: italic;
+        font-weight: 700;
+        font-size: 112px;
+        line-height: 1;
+        letter-spacing: -2px;
+      }
+      .sparkle {
+        position: absolute;
+        z-index: 1;
+        border-radius: 50%;
+        pointer-events: none;
+      }
+
+      /* stats */
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+      }
+      .stat {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+      }
+      .stat .label {
+        font-size: 17px;
+        color: var(--muted);
+      }
+      .stat .value {
+        font-size: 32px;
+        margin-top: 24px;
+        font-weight: 400;
+      }
+
+      h2 {
+        font-family: "DM Sans", sans-serif;
+        font-size: 20px;
+        font-weight: 600;
+      }
+      .daily h2 {
+        margin-bottom: 20px;
+      }
+      .days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 16px;
+      }
+      .day {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px 10px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        transition: background 0.15s;
+      }
+      .day:hover {
+        background: var(--card-hover);
+      }
+      .day .name {
+        font-size: 18px;
+      }
+      .day .icon {
+        font-size: 40px;
+        line-height: 1.2;
+      }
+      .day .range {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        font-size: 16px;
+      }
+
+      /* hourly */
+      .hourly {
+        background: var(--card);
+        border-radius: 20px;
+        padding: 24px;
+        height: 693px;
+        display: flex;
+        flex-direction: column;
+      }
+      .hourly-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        position: relative;
+      }
+      .btn-day {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: var(--border);
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: background 0.15s;
+      }
+      .btn-day:hover {
+        background: #4a4970;
+      }
+      .hourly .dropdown {
+        min-width: 180px;
+        top: calc(100% + 8px);
+      }
+      .hour-list {
+        flex: 1;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding-right: 6px;
+        scrollbar-width: thin;
+        scrollbar-color: var(--border) transparent;
+      }
+      .hour {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #302f4a;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 0 16px;
+        min-height: 60px;
+        transition: background 0.15s;
+      }
+      .hour:hover {
+        background: #3a3960;
+      }
+      .hour .l {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 20px;
+      }
+      .hour .l span:first-child {
+        font-size: 24px;
+      }
+      .hour .t {
+        font-size: 16px;
+      }
+
+      /* states */
+      .state {
+        text-align: center;
+        padding: 80px 0;
+        font-size: 24px;
+        color: var(--muted);
+      }
+      .state h2 {
+        font-size: 32px;
+        color: #fff;
+        margin-bottom: 12px;
+      }
+      .state button {
+        margin-top: 20px;
+        background: var(--card);
+        padding: 12px 20px;
+        border-radius: 10px;
+        font-size: 16px;
+      }
+      .state button:hover {
+        background: var(--card-hover);
+      }
+      .skeleton {
+        animation: pulse 1.2s infinite ease-in-out;
+      }
+      @keyframes pulse {
+        50% {
+          opacity: 0.5;
+        }
+      }
+      [hidden] {
+        display: none !important;
+      }
+
+      /* responsive */
+      @media (max-width: 1100px) {
+        body {
+          padding: 32px 32px 48px;
+        }
+        .layout {
+          grid-template-columns: 1fr;
+        }
+        .hourly {
+          height: auto;
+          max-height: 640px;
+        }
+      }
+      @media (max-width: 700px) {
+        body {
+          padding: 20px 16px 40px;
+          font-size: 16px;
+        }
+        .logo {
+          font-size: 18px;
+        }
+        .logo svg {
+          width: 28px;
+          height: 28px;
+        }
+        h1 {
+          font-size: 40px;
+          margin: 40px 0 32px;
+        }
+        .search {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .search-box {
+          width: 100%;
+        }
+        .search-box input,
+        .btn-search {
+          height: 52px;
+        }
+        .suggestions {
+          top: 60px;
+        }
+        .current {
+          flex-direction: column;
+          justify-content: center;
+          text-align: center;
+          padding: 40px 16px;
+          gap: 16px;
+        }
+        .loc {
+          font-size: 26px;
+        }
+        .temp {
+          font-size: 88px;
+        }
+        .cur-icon {
+          font-size: 56px;
+        }
+        .stats {
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+        }
+        .stat .value {
+          font-size: 28px;
+          margin-top: 16px;
+        }
+        .days {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 12px;
+        }
+        .hourly {
+          padding: 20px 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="logo">
+          <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true">
+            <g stroke="#f4a100" stroke-width="3.5" stroke-linecap="round">
+              <line x1="20" y1="2" x2="20" y2="9" />
+              <line x1="20" y1="31" x2="20" y2="38" />
+              <line x1="2" y1="20" x2="9" y2="20" />
+              <line x1="31" y1="20" x2="38" y2="20" />
+              <line x1="7.3" y1="7.3" x2="12.2" y2="12.2" />
+              <line x1="27.8" y1="27.8" x2="32.7" y2="32.7" />
+              <line x1="32.7" y1="7.3" x2="27.8" y2="12.2" />
+              <line x1="12.2" y1="27.8" x2="7.3" y2="32.7" />
+            </g>
+          </svg>
+          Weather Now
+        </div>
+        <div class="menu-wrap">
+          <button
+            class="btn-units"
+            id="unitsBtn"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#fff"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="3" />
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+              />
+            </svg>
+            Units
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 12 12"
+              fill="none"
+              stroke="#fff"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M2 4l4 4 4-4" />
+            </svg>
+          </button>
+          <div class="dropdown" id="unitsMenu" role="menu">
+            <button class="dd-switch" id="switchAll" role="menuitem"></button>
+            <div class="dd-group" data-key="temp">
+              <div class="dd-label">Temperature</div>
+              <button class="dd-opt" data-val="celsius" role="menuitemradio">
+                Celsius (°C)<span class="check">✓</span>
+              </button>
+              <button class="dd-opt" data-val="fahrenheit" role="menuitemradio">
+                Fahrenheit (°F)<span class="check">✓</span>
+              </button>
+            </div>
+            <div class="dd-group" data-key="wind">
+              <div class="dd-label">Wind Speed</div>
+              <button class="dd-opt" data-val="kmh" role="menuitemradio">
+                km/h<span class="check">✓</span>
+              </button>
+              <button class="dd-opt" data-val="mph" role="menuitemradio">
+                mph<span class="check">✓</span>
+              </button>
+            </div>
+            <div class="dd-group" data-key="precip">
+              <div class="dd-label">Precipitation</div>
+              <button class="dd-opt" data-val="mm" role="menuitemradio">
+                Millimeters (mm)<span class="check">✓</span>
+              </button>
+              <button class="dd-opt" data-val="inch" role="menuitemradio">
+                Inches (in)<span class="check">✓</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <h1>How’s the sky looking today?</h1>
+
+      <form class="search" id="searchForm" autocomplete="off" role="search">
+        <div class="search-box">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#d4d3d9"
+            stroke-width="2"
+            stroke-linecap="round"
+          >
+            <circle cx="11" cy="11" r="7" />
+            <path d="M20 20l-3.5-3.5" />
+          </svg>
+          <input
+            id="q"
+            type="text"
+            placeholder="Search for a place..."
+            aria-label="Search for a place"
+          />
+          <div class="suggestions" id="suggest"></div>
+        </div>
+        <button class="btn-search" type="submit">Search</button>
+      </form>
+
+      <div class="state" id="state" hidden></div>
+
+      <div class="layout" id="app">
+        <div class="main">
+          <section class="current" id="current" aria-live="polite">
+            <span
+              class="sparkle"
+              style="
+                left: 57px;
+                top: 44px;
+                width: 14px;
+                height: 14px;
+                background: #6c7ae8;
+                opacity: 0.5;
+              "
+            ></span>
+            <span
+              class="sparkle"
+              style="
+                left: 362px;
+                top: 34px;
+                width: 10px;
+                height: 10px;
+                background: #f4a100;
+              "
+            ></span>
+            <span
+              class="sparkle"
+              style="
+                left: 312px;
+                bottom: 56px;
+                width: 14px;
+                height: 14px;
+                background: #f4a100;
+              "
+            ></span>
+            <span
+              class="sparkle"
+              style="
+                left: 603px;
+                bottom: 46px;
+                width: 14px;
+                height: 14px;
+                background: #6c7ae8;
+                opacity: 0.5;
+              "
+            ></span>
+            <div>
+              <div class="loc" id="loc">—</div>
+              <div class="date" id="date">—</div>
+            </div>
+            <div class="temp-row">
+              <span class="cur-icon" id="curIcon">☀️</span>
+              <span class="temp" id="temp">--°</span>
+            </div>
+          </section>
+
+          <section class="stats">
+            <div class="stat">
+              <div class="label">Feels Like</div>
+              <div class="value" id="feels">--</div>
+            </div>
+            <div class="stat">
+              <div class="label">Humidity</div>
+              <div class="value" id="humidity">--</div>
+            </div>
+            <div class="stat">
+              <div class="label">Wind</div>
+              <div class="value" id="wind">--</div>
+            </div>
+            <div class="stat">
+              <div class="label">Precipitation</div>
+              <div class="value" id="precip">--</div>
+            </div>
+          </section>
+
+          <section class="daily">
+            <h2>Daily forecast</h2>
+            <div class="days" id="days"></div>
+          </section>
+        </div>
+
+        <aside class="hourly">
+          <div class="hourly-head">
+            <h2>Hourly forecast</h2>
+            <div class="menu-wrap">
+              <button
+                class="btn-day"
+                id="dayBtn"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                <span id="dayLabel">—</span>
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 12 12"
+                  fill="none"
+                  stroke="#fff"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M2 4l4 4 4-4" />
+                </svg>
+              </button>
+              <div class="dropdown" id="dayMenu" role="menu"></div>
+            </div>
+          </div>
+          <div class="hour-list" id="hours"></div>
+        </aside>
+      </div>
+    </div>
+
+    <script>
+      const GEO = "https://geocoding-api.open-meteo.com/v1/search";
+      const FORECAST = "https://api.open-meteo.com/v1/forecast";
+
+      const units = { temp: "fahrenheit", wind: "mph", precip: "inch" };
+      let place = {
+        name: "Berlin",
+        country: "Germany",
+        latitude: 52.52,
+        longitude: 13.41,
+      };
+      let data = null;
+      let selectedDay = 0;
+
+      const $ = (id) => document.getElementById(id);
+
+      function icon(code) {
+        if (code === 0) return "☀️";
+        if (code === 1) return "🌤️";
+        if (code === 2) return "⛅";
+        if (code === 3) return "☁️";
+        if (code === 45 || code === 48) return "🌫️";
+        if (code >= 51 && code <= 57) return "🌦️";
+        if (code >= 61 && code <= 67) return "🌧️";
+        if (code >= 71 && code <= 77) return "❄️";
+        if (code >= 80 && code <= 82) return "🌧️";
+        if (code === 85 || code === 86) return "🌨️";
+        if (code >= 95) return "⛈️";
+        return "☁️";
+      }
+
+      const round = (n) => Math.round(n);
+      const tUnit = () => (units.temp === "celsius" ? "°C" : "°F");
+
+      /* ---------- data ---------- */
+      async function load() {
+        showState(null);
+        $("app").classList.add("skeleton");
+        try {
+          const params = new URLSearchParams({
+            latitude: place.latitude,
+            longitude: place.longitude,
+            current:
+              "temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,precipitation,weather_code",
+            hourly: "temperature_2m,weather_code",
+            daily: "weather_code,temperature_2m_max,temperature_2m_min",
+            temperature_unit: units.temp,
+            wind_speed_unit: units.wind,
+            precipitation_unit: units.precip,
+            timezone: "auto",
+          });
+          const res = await fetch(`${FORECAST}?${params}`);
+          if (!res.ok) throw new Error("bad response");
+          data = await res.json();
+          selectedDay = Math.min(selectedDay, data.daily.time.length - 1);
+          render();
+          $("app").hidden = false;
+        } catch (e) {
+          showState("error");
+        } finally {
+          $("app").classList.remove("skeleton");
+        }
+      }
+
+      function showState(kind, msg) {
+        const s = $("state");
+        if (!kind) {
+          s.hidden = true;
+          $("app").hidden = false;
+          return;
+        }
+        $("app").hidden = true;
+        s.hidden = false;
+        if (kind === "error") {
+          s.innerHTML =
+            '<h2>Something went wrong</h2><p>We couldn’t connect to the server (API error). Please try again in a few moments.</p><button id="retry">Retry</button>';
+          $("retry").onclick = load;
+        } else if (kind === "empty") {
+          s.innerHTML = "<h2>No search result found!</h2>";
+        }
+      }
+
+      /* ---------- render ---------- */
+      function fmtDate(iso) {
+        return new Date(iso + "Z").toLocaleDateString("en-US", {
+          weekday: "long",
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+          timeZone: "UTC",
+        });
+      }
+      function dayName(iso, style) {
+        return new Date(iso + "T00:00:00Z").toLocaleDateString("en-US", {
+          weekday: style,
+          timeZone: "UTC",
+        });
+      }
+      function hourLabel(iso) {
+        const h = parseInt(iso.slice(11, 13), 10);
+        return `${h % 12 || 12} ${h < 12 ? "AM" : "PM"}`;
+      }
+
+      function render() {
+        const c = data.current;
+        $("loc").textContent =
+          `${place.name}${place.country ? ", " + place.country : ""}`;
+        $("date").textContent = fmtDate(c.time);
+        $("curIcon").textContent = icon(c.weather_code);
+        $("temp").textContent = `${round(c.temperature_2m)}°`;
+        $("feels").textContent = `${round(c.apparent_temperature)}°`;
+        $("humidity").textContent = `${round(c.relative_humidity_2m)}%`;
+        $("wind").textContent =
+          `${round(c.wind_speed_10m)} ${units.wind === "kmh" ? "km/h" : "mph"}`;
+        $("precip").textContent =
+          `${c.precipitation} ${units.precip === "inch" ? "in" : "mm"}`;
+
+        const d = data.daily;
+        $("days").innerHTML = d.time
+          .map(
+            (t, i) => `
+    <div class="day">
+      <div class="name">${dayName(t, "short")}</div>
+      <div class="icon">${icon(d.weather_code[i])}</div>
+      <div class="range"><span>${round(d.temperature_2m_max[i])}°</span><span>${round(d.temperature_2m_min[i])}°</span></div>
+    </div>`,
+          )
+          .join("");
+
+        $("dayMenu").innerHTML = d.time
+          .map(
+            (t, i) =>
+              `<button class="dd-opt ${i === selectedDay ? "active" : ""}" data-i="${i}" role="menuitemradio">${dayName(t, "long")}</button>`,
+          )
+          .join("");
+
+        renderHours();
+        syncUnitsMenu();
+      }
+
+      function renderHours() {
+        const start = selectedDay * 24;
+        const h = data.hourly;
+        $("dayLabel").textContent = dayName(
+          data.daily.time[selectedDay],
+          "long",
+        );
+        let html = "";
+        for (let i = start; i < start + 24 && i < h.time.length; i++) {
+          html += `<div class="hour"><div class="l"><span>${icon(h.weather_code[i])}</span><span>${hourLabel(h.time[i])}</span></div><div class="t">${round(h.temperature_2m[i])}°</div></div>`;
+        }
+        $("hours").innerHTML = html;
+        $("hours").scrollTop = 0;
+      }
+
+      /* ---------- units menu ---------- */
+      function isImperial() {
+        return (
+          units.temp === "fahrenheit" &&
+          units.wind === "mph" &&
+          units.precip === "inch"
+        );
+      }
+      function syncUnitsMenu() {
+        $("switchAll").textContent = isImperial()
+          ? "Switch to Metric"
+          : "Switch to Imperial";
+        document.querySelectorAll("#unitsMenu .dd-group").forEach((g) => {
+          g.querySelectorAll(".dd-opt").forEach((b) =>
+            b.classList.toggle(
+              "active",
+              b.dataset.val === units[g.dataset.key],
+            ),
+          );
+        });
+      }
+
+      function toggleMenu(btn, menu, force) {
+        const open =
+          force !== undefined ? force : !menu.classList.contains("open");
+        menu.classList.toggle("open", open);
+        btn.setAttribute("aria-expanded", open);
+      }
+
+      $("unitsBtn").onclick = (e) => {
+        e.stopPropagation();
+        toggleMenu($("unitsBtn"), $("unitsMenu"));
+        toggleMenu($("dayBtn"), $("dayMenu"), false);
+      };
+      $("dayBtn").onclick = (e) => {
+        e.stopPropagation();
+        toggleMenu($("dayBtn"), $("dayMenu"));
+        toggleMenu($("unitsBtn"), $("unitsMenu"), false);
+      };
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest("#unitsMenu"))
+          toggleMenu($("unitsBtn"), $("unitsMenu"), false);
+        if (!e.target.closest("#dayMenu"))
+          toggleMenu($("dayBtn"), $("dayMenu"), false);
+        if (!e.target.closest(".search-box"))
+          $("suggest").classList.remove("open");
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          toggleMenu($("unitsBtn"), $("unitsMenu"), false);
+          toggleMenu($("dayBtn"), $("dayMenu"), false);
+          $("suggest").classList.remove("open");
+        }
+      });
+
+      $("switchAll").onclick = () => {
+        if (isImperial())
+          Object.assign(units, { temp: "celsius", wind: "kmh", precip: "mm" });
+        else
+          Object.assign(units, {
+            temp: "fahrenheit",
+            wind: "mph",
+            precip: "inch",
+          });
+        load();
+      };
+      document.querySelectorAll("#unitsMenu .dd-group").forEach((g) => {
+        g.addEventListener("click", (e) => {
+          const b = e.target.closest(".dd-opt");
+          if (!b) return;
+          units[g.dataset.key] = b.dataset.val;
+          load();
+        });
+      });
+      $("dayMenu").addEventListener("click", (e) => {
+        const b = e.target.closest(".dd-opt");
+        if (!b) return;
+        selectedDay = +b.dataset.i;
+        $("dayMenu")
+          .querySelectorAll(".dd-opt")
+          .forEach((x) => x.classList.toggle("active", x === b));
+        renderHours();
+        toggleMenu($("dayBtn"), $("dayMenu"), false);
+      });
+
+      /* ---------- search ---------- */
+      async function geocode(name, count = 5) {
+        const res = await fetch(
+          `${GEO}?name=${encodeURIComponent(name)}&count=${count}&language=en&format=json`,
+        );
+        if (!res.ok) throw new Error("geo");
+        const j = await res.json();
+        return j.results || [];
+      }
+
+      let timer;
+      $("q").addEventListener("input", () => {
+        clearTimeout(timer);
+        const v = $("q").value.trim();
+        if (v.length < 2) {
+          $("suggest").classList.remove("open");
+          return;
+        }
+        timer = setTimeout(async () => {
+          try {
+            const r = await geocode(v);
+            const box = $("suggest");
+            box.innerHTML = r.length
+              ? r
+                  .map(
+                    (p, i) =>
+                      `<button type="button" data-i="${i}">${p.name}${p.admin1 ? ", " + p.admin1 : ""}, ${p.country || ""}</button>`,
+                  )
+                  .join("")
+              : '<div class="note">No matches</div>';
+            box._results = r;
+            box.classList.add("open");
+          } catch (e) {
+            /* ignore suggestion errors */
+          }
+        }, 250);
+      });
+
+      $("suggest").addEventListener("click", (e) => {
+        const b = e.target.closest("button");
+        if (!b) return;
+        choose($("suggest")._results[+b.dataset.i]);
+      });
+
+      function choose(p) {
+        place = {
+          name: p.name,
+          country: p.country,
+          latitude: p.latitude,
+          longitude: p.longitude,
+        };
+        $("q").value = "";
+        $("suggest").classList.remove("open");
+        selectedDay = 0;
+        load();
+      }
+
+      $("searchForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const v = $("q").value.trim();
+        if (!v) return;
+        try {
+          const r = await geocode(v, 1);
+          if (!r.length) {
+            showState("empty");
+            return;
+          }
+          choose(r[0]);
+        } catch (err) {
+          showState("error");
+        }
+      });
+
+      /* ---------- start ---------- */
+      load();
+    </script>
+  </body>
+</html>
